@@ -1,0 +1,44 @@
+[workspace]
+members = [
+    "dowfn-core",
+    "dowfn-app",
+    "dowfn-shared",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Dowfn Team"]
+license = "MIT"
+
+[workspace.dependencies]
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.10", features = ["v4", "serde"] }
+bytes = "1.7"
+futures = "0.3"
+async-trait = "0.1"
+reqwest = { version = "0.12", features = ["stream", "rustls-tls", "cookies", "gzip", "brotli", "deflate"] }
+url = "2.5"
+dashmap = "6.0"
+parking_lot = "0.12"
+blake3 = "1.5"
+base64 = "0.22"
+windows = { version = "0.58", features = ["Win32_Storage_FileSystem", "Win32_Foundation", "Win32_System_SystemServices", "Win32_System_SystemInformation", "Win32_UI_WindowsAndMessaging", "Win32_System_Console"] }
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true

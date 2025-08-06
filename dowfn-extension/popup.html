@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            min-height: 400px;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+        }
+        
+        .status-dot.connected {
+            background: #00ff00;
+        }
+        
+        .add-section {
+            padding: 15px;
+            background: #2a2a2a;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 8px 12px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        button:hover {
+            background: #5a67d8;
+        }
+        
+        button:disabled {
+            background: #4a4a4a;
+            cursor: not-allowed;
+        }
+        
+        .downloads-list {
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .download-item {
+            background: #2a2a2a;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .download-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .download-progress {
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        
+        .download-progress-bar {
+            height: 100%;
+            background: #667eea;
+            transition: width 0.3s;
+        }
+        
+        .download-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .settings-link {
+            display: block;
+            padding: 10px 15px;
+            background: #2a2a2a;
+            border-top: 1px solid #3a3a3a;
+            text-align: center;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .settings-link:hover {
+            background: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dowfn Manager</h1>
+        <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Disconnected</span>
+        </div>
+    </div>
+    
+    <div class="add-section">
+        <div class="input-group">
+            <input type="text" id="urlInput" placeholder="Enter download URL">
+            <button id="addBtn">Add</button>
+        </div>
+        <button id="pasteBtn" style="width: 100%;">Paste from Clipboard</button>
+    </div>
+    
+    <div class="downloads-list" id="downloadsList">
+        <div class="empty-state">
+            No active downloads
+        </div>
+    </div>
+    
+    <a href="#" class="settings-link" id="settingsLink">Open Settings</a>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
