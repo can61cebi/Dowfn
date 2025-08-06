@@ -1,0 +1,324 @@
+import { Button, StandardButton, LineEdit, ListView, ScrollView, ProgressIndicator, TabWidget, CheckBox, ComboBox, SpinBox, Slider } from "std-widgets.slint";
+
+export struct DownloadItem {
+    id: string,
+    filename: string,
+    url: string,
+    size: string,
+    downloaded: string,
+    progress: float,
+    speed: string,
+    status: string,
+    time_remaining: string,
+}
+
+export struct Statistics {
+    total_downloads: int,
+    active_downloads: int,
+    completed_downloads: int,
+    failed_downloads: int,
+    current_speed: string,
+    total_downloaded: string,
+}
+
+export component MainWindow inherits Window {
+    title: "Dowfn - Download Manager";
+    width: 1200px;
+    height: 800px;
+    background: #1a1a1a;
+    
+    in property <[DownloadItem]> downloads: [];
+    in property <Statistics> stats: {
+        total_downloads: 0,
+        active_downloads: 0,
+        completed_downloads: 0,
+        failed_downloads: 0,
+        current_speed: "0 B/s",
+        total_downloaded: "0 B",
+    };
+    in property <string> clipboard_content: "";
+    in property <bool> is_url_valid: false;
+    
+    callback add_download(string);
+    callback pause_download(string);
+    callback resume_download(string);
+    callback cancel_download(string);
+    callback remove_download(string);
+    callback paste_from_clipboard();
+    callback clear_completed();
+    callback open_settings();
+    
+    VerticalLayout {
+        padding: 0px;
+        spacing: 0px;
+        
+        Rectangle {
+            height: 60px;
+            background: #2a2a2a;
+            
+            HorizontalLayout {
+                padding: 10px;
+                spacing: 10px;
+                alignment: start;
+                
+                LineEdit {
+                    width: root.width * 0.6;
+                    height: 40px;
+                    placeholder-text: "Enter download URL or paste from clipboard";
+                    text: clipboard_content;
+                    font-size: 14px;
+                }
+                
+                Button {
+                    text: "📋 Paste";
+                    height: 40px;
+                    clicked => { paste_from_clipboard(); }
+                }
+                
+                Button {
+                    text: "➕ Add Download";
+                    height: 40px;
+                    primary: true;
+                    enabled: clipboard_content != "" && is_url_valid;
+                    clicked => { 
+                        if (clipboard_content != "") {
+                            add_download(clipboard_content);
+                        }
+                    }
+                }
+                
+                Rectangle { 
+                    horizontal-stretch: 1;
+                }
+                
+                Button {
+                    text: "⚙️ Settings";
+                    height: 40px;
+                    clicked => { open_settings(); }
+                }
+            }
+        }
+        
+        Rectangle {
+            height: 50px;
+            background: #252525;
+            
+            HorizontalLayout {
+                padding: 10px;
+                spacing: 20px;
+                
+                Button {
+                    text: "⏸️ Pause All";
+                    height: 30px;
+                }
+                
+                Button {
+                    text: "▶️ Resume All";
+                    height: 30px;
+                }
+                
+                Button {
+                    text: "🗑️ Clear Completed";
+                    height: 30px;
+                    clicked => { clear_completed(); }
+                }
+                
+                Rectangle { 
+                    horizontal-stretch: 1;
+                }
+                
+                HorizontalLayout {
+                    spacing: 15px;
+                    alignment: end;
+                    
+                    Text {
+                        text: "Active: " + stats.active_downloads;
+                        color: #00ff00;
+                        vertical-alignment: center;
+                    }
+                    
+                    Text {
+                        text: "Completed: " + stats.completed_downloads;
+                        color: #0099ff;
+                        vertical-alignment: center;
+                    }
+                    
+                    Text {
+                        text: "Failed: " + stats.failed_downloads;
+                        color: #ff4444;
+                        vertical-alignment: center;
+                    }
+                    
+                    Text {
+                        text: "Speed: " + stats.current_speed;
+                        color: #ffaa00;
+                        vertical-alignment: center;
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+        
+        ScrollView {
+            vertical-stretch: 1;
+            
+            VerticalLayout {
+                padding: 10px;
+                spacing: 5px;
+                
+                for item in downloads: Rectangle {
+                    height: 80px;
+                    background: #2a2a2a;
+                    border-radius: 5px;
+                    
+                    HorizontalLayout {
+                        padding: 10px;
+                        spacing: 10px;
+                        
+                        Rectangle {
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 5px;
+                            background: item.status == "Downloading" ? #00ff00 : 
+                                       item.status == "Paused" ? #ffaa00 :
+                                       item.status == "Failed" ? #ff4444 :
+                                       item.status == "Completed" ? #0099ff : #666666;
+                            
+                            Text {
+                                text: item.status == "Downloading" ? "⬇" :
+                                      item.status == "Paused" ? "⏸" :
+                                      item.status == "Failed" ? "❌" :
+                                      item.status == "Completed" ? "✓" : "⏳";
+                                color: white;
+                                font-size: 20px;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                        
+                        VerticalLayout {
+                            spacing: 5px;
+                            horizontal-stretch: 1;
+                            
+                            Text {
+                                text: item.filename;
+                                color: white;
+                                font-size: 14px;
+                                font-weight: 600;
+                                overflow: elide;
+                            }
+                            
+                            HorizontalLayout {
+                                spacing: 10px;
+                                
+                                Text {
+                                    text: item.downloaded + " / " + item.size;
+                                    color: #aaaaaa;
+                                    font-size: 12px;
+                                }
+                                
+                                Text {
+                                    text: "•";
+                                    color: #666666;
+                                }
+                                
+                                Text {
+                                    text: item.speed;
+                                    color: #00ff00;
+                                    font-size: 12px;
+                                }
+                                
+                                Text {
+                                    text: "•";
+                                    color: #666666;
+                                }
+                                
+                                Text {
+                                    text: item.time_remaining;
+                                    color: #ffaa00;
+                                    font-size: 12px;
+                                }
+                            }
+                            
+                            Rectangle {
+                                height: 4px;
+                                background: #1a1a1a;
+                                border-radius: 2px;
+                                
+                                Rectangle {
+                                    width: parent.width * item.progress;
+                                    height: 100%;
+                                    background: item.status == "Downloading" ? #00ff00 :
+                                               item.status == "Completed" ? #0099ff :
+                                               #666666;
+                                    border-radius: 2px;
+                                }
+                            }
+                        }
+                        
+                        HorizontalLayout {
+                            spacing: 5px;
+                            alignment: center;
+                            
+                            if item.status == "Downloading": Button {
+                                text: "⏸";
+                                width: 30px;
+                                height: 30px;
+                                clicked => { pause_download(item.id); }
+                            }
+                            
+                            if item.status == "Paused": Button {
+                                text: "▶";
+                                width: 30px;
+                                height: 30px;
+                                clicked => { resume_download(item.id); }
+                            }
+                            
+                            Button {
+                                text: "❌";
+                                width: 30px;
+                                height: 30px;
+                                clicked => { cancel_download(item.id); }
+                            }
+                            
+                            Button {
+                                text: "🗑";
+                                width: 30px;
+                                height: 30px;
+                                clicked => { remove_download(item.id); }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        Rectangle {
+            height: 25px;
+            background: #1f1f1f;
+            
+            HorizontalLayout {
+                padding-left: 10px;
+                padding-right: 10px;
+                
+                Text {
+                    text: "Total Downloaded: " + stats.total_downloaded;
+                    color: #888888;
+                    font-size: 11px;
+                    vertical-alignment: center;
+                }
+                
+                Rectangle { 
+                    horizontal-stretch: 1;
+                }
+                
+                Text {
+                    text: "Dowfn v0.1.0 - High Performance Download Manager";
+                    color: #666666;
+                    font-size: 11px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

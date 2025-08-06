@@ -1,0 +1,38 @@
+[package]
+name = "dowfn-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+dowfn-shared = { path = "../dowfn-shared" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+bytes = { workspace = true }
+futures = { workspace = true }
+async-trait = { workspace = true }
+reqwest = { workspace = true }
+url = { workspace = true }
+dashmap = { workspace = true }
+parking_lot = { workspace = true }
+blake3 = { workspace = true }
+base64 = { workspace = true }
+tokio-util = { version = "0.7", features = ["io"] }
+pin-project = "1.1"
+tempfile = "3.12"
+dirs = "5.0"
+num_cpus = "1.16"
+governor = "0.6"
+nonzero_ext = "0.3"
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true }
+
+[dev-dependencies]
+tokio-test = "0.4"
+mockito = "1.5"
